@@ -164,5 +164,8 @@ cython_debug/
 # Other
 runs/
 models/
+models/.
+models/best.pt
+models/last.pt
 out/
 training/
