@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 
-# Load the YOLO model
-model = YOLO('models/yolov8l.pt')
+# Load the YOLO model fine-tuned with best.pt weights
+model = YOLO('models/best.pt')
 
 results = model.predict('data/sample_data.mp4', save=True, stream=True)
 
