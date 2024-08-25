@@ -1,5 +1,7 @@
 from utils import *
 from trackers import Tracker
+from team_assigner import TeamAssigner
+import cv2
 
 def main():
     # Read the video
@@ -11,6 +13,16 @@ def main():
     # Get the object tracks
     tracks = tracker.get_object_tracks(video_frames, read_from_stub=True, stub_path='stubs/tracks_stubs.pkl')
     
+    # Assign player teams
+    team_assigner = TeamAssigner()
+    team_assigner.assign_team_color(video_frames[0], tracks['players'][0])
+    
+    for frame_num, player_tracks in enumerate(tracks['players']):
+        for player_id, player_track in player_tracks.items():
+            player_team = team_assigner.get_player_team(video_frames[frame_num], player_track['bbox'], player_id)
+            tracks['players'][frame_num][player_id]['team'] = player_team
+            tracks['players'][frame_num][player_id]['team_color'] = team_assigner.team_colors[player_team]
+         
     # Draw the object tracks on the video frames
     output_video_frames = tracker.draw_annotations(video_frames, tracks)
     
