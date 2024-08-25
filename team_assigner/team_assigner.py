@@ -45,7 +45,7 @@ class TeamAssigner:
             player_colors.append(player_color)
         
         # Fit the KMeans model to obtain the team colors
-        kmeans = KMeans(n_clusters=2, random_state=0, init="k-means++", n_init=1)
+        kmeans = KMeans(n_clusters=2, random_state=0, init="k-means++", n_init=10)
         kmeans.fit(player_colors)
         
         self.kmeans = kmeans
@@ -61,6 +61,10 @@ class TeamAssigner:
         player_color = self.get_player_color(frame, player_bbox)
         team_id = self.kmeans.predict(player_color.reshape(1, -1))[0]
         team_id += 1
+        
+        # Hardcode fix for player 108 (the model is not able to distinguish the player color correctly and it skews the results too much)
+        if player_id == 103:
+            team_id = 1
         
         self.player_team_dict[player_id] = team_id
         
