@@ -1,4 +1,5 @@
 from utils import *
+from player_ball_assigner import PlayerBallAssigner
 from trackers import Tracker
 from team_assigner import TeamAssigner
 import os
@@ -20,11 +21,20 @@ def main():
     team_assigner = TeamAssigner()
     team_assigner.assign_team_color(video_frames[0], tracks['players'][0])
     
+    # Assign team to each player and color based on the team
     for frame_num, player_tracks in enumerate(tracks['players']):
         for player_id, player_track in player_tracks.items():
             player_team = team_assigner.get_player_team(video_frames[frame_num], player_track['bbox'], player_id)
             tracks['players'][frame_num][player_id]['team'] = player_team
             tracks['players'][frame_num][player_id]['team_color'] = team_assigner.team_colors[player_team]
+            
+    # Assign ball aquisition to players
+    player_assigner = PlayerBallAssigner()
+    for frame_num, player_track in enumerate(tracks['players']):
+        ball_bbox = tracks['ball'][frame_num][1]['bbox']   
+        assigned_player = player_assigner.assign_ball_to_player(player_track, ball_bbox)
+        if assigned_player != -1:
+            tracks['players'][frame_num][assigned_player]['has_ball'] = True
             
     # Make sure the output directory exists
     output_dir = 'out'
